@@ -14,11 +14,16 @@ FORA = -4
 CAM = -2
 FIM = -3
 PAREDE = -1
-BOMBA = 1
 LIMPO = 0
+BOMBA = 1
 
 def criar_tab(N,M):
-	#criar tabuleiro NxM
+	'''
+	Cria uma tabela vazia com dimensoes N e M
+	Retorna a tabela e a visao da tabela
+	'''
+	N = max(2,N)
+	#criar tabuleiro N linhas x M colunas
 	#retorna o tabuleiro do jogo e a visao do tabuleiro
 	t = np.full((N+1,M),LIMPO,dtype=np.int8)
 	t = np.concatenate( (np.full((1,M),PAREDE,dtype=np.int8),
@@ -32,10 +37,16 @@ def criar_tab(N,M):
 	np.full((t.shape[0],1),PAREDE,dtype=np.int8)),
 	axis = 1)
 	
-	v = t.copy()
-	v = np.where(v == LIMPO,DUVIDA,v)
+	v = criar_visao(t)
 	#'''
 	return t,v
+
+def criar_visao(tab):
+	v = tab.copy()
+	v = np.where(v == LIMPO,DUVIDA,v)
+	
+	return v
+	
 
 def criar_caminho(tab, pLO=0.25, pN = 0.25):
 	#pLO eh a probabilidade de ir para LESTE ou OESTE
@@ -60,7 +71,7 @@ def criar_caminho(tab, pLO=0.25, pN = 0.25):
 				x=x+1
 				
 		else:
-		#Direcao LESTE ou OESTE	
+		#Direcao LESTE ou OESTE 
 			if (random.randint(0,1) == 0):
 				#LESTE
 				d = 1
@@ -81,7 +92,7 @@ def criar_caminho(tab, pLO=0.25, pN = 0.25):
 				if (tab[x-1,y] == LIMPO):
 					x=x-1
 					tab[x,y] = CAM
-			'''	
+			''' 
 
 def minar(tab, prob = 1):
 	#Coloca as minas no tabuleiro.
@@ -103,6 +114,8 @@ def minar(tab, prob = 1):
 def inicializar_tab(N,M,*,probMina = 1, pLO=0.25, pN = 0.25):
 	#Basicamente, cria o tabuleiro, ajusta o caminho e as minas
 	#Retorna o tabuleiro e sua visao
+	random.seed()
+	
 	tt,vv = criar_tab(N,M)
 	criar_caminho(tt,pLO,pN)
 	minar(tt,probMina)
@@ -137,7 +150,7 @@ def atualizar_visao(tab,visao,x,y):
 		return False
 	'''
 	
-	if (visao[x,y] == DUVIDA):	
+	if (visao[x,y] == DUVIDA):  
 		r = testar_posicao(tab,x,y)
 		if (r >= 0):
 			visao[x,y] = r
@@ -179,7 +192,7 @@ def mover_para(tab,visao,x,y):
 		atualizar_visao(tab,visao,x,y)
 		return True,LIMPO
 		
-	return False,visao[x,y]
+	return False,PAREDE
 
 def dep_imprimir_visao(tab,visao,x,y):
 	'''
@@ -211,7 +224,7 @@ def dep_imprimir_visao(tab,visao,x,y):
 			
 			linha+=' '
 		
-		print(linha)		
+		print(linha)        
 	
 	return
 
@@ -247,7 +260,7 @@ def revelar_tabela(tab,visao,x,y):
 					cprint(' '+str(visao[i,j])+' ','blue','on_white', end=' ')
 			
 		
-		print('')		
+		print('')       
 	
 	return
 
@@ -281,7 +294,7 @@ def imprimir_visao(tab,visao,x,y):
 					cprint(' '+str(visao[i,j])+' ','blue','on_white', end=' ')
 			
 		
-		print('')		
+		print('')       
 	
 	return
 
